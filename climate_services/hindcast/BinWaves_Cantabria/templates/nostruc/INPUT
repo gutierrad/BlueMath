@@ -1,0 +1,21 @@
+PROJ 'unstruc' '{{ case_num }}'
+$
+SET LEVEL 0.0
+$
+CGRID UNSTRUCtured 24 .03 28
+READgrid UNSTRUCtured ADCirc
+$
+BOUndspec SIDE 1 CONstant FILE 'input_spectra_N.bnd'
+$
+FRICTION
+BREAKING
+OFF QUAD
+$
+POINTS 'LOC' FILE 'locations.loc'
+SPECOUT 'LOC' SPEC2D 'output.spec'
+BLOCK 'COMPGRID' NOHEAD 'output.mat' LAY 3 XP YP DEPTH HSIGN TM02 DIR PDIR TPS DSPR PTHSIGN PTRTP PTDIR PTDSPR
+$
+TEST  1,0
+COMPUTE 
+STOP
+$
