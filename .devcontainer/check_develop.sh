@@ -6,7 +6,7 @@ git config --global --add safe.directory /workspaces/BlueMath
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "Current branch: $BRANCH"
 
-if [ "$BRANCH" = "develop" ]; then
+if [ "$BRANCH" != "main" ]; then
     echo "Installing bluemath-tk in development mode..."
     # Clone the repository
     git clone https://github.com/GeoOcean/BlueMath_tk.git /workspaces/BlueMath_tk
