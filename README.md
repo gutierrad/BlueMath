@@ -19,7 +19,7 @@ As shown in Figure 1, this repository provides examples of how to use the core t
 1. Internal project at the GeoOcean group, University of Cantabria.
 2. Specific Projects that partially support the development of BlueMath.
 
-<img src="assets/logos.png" alt="picture" width="800"/>
+<img src="assets/logos.svg" alt="picture" width="800"/>
 
 ## History
 
