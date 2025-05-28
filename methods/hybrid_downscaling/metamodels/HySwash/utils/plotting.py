@@ -67,21 +67,21 @@ def animate_case_propagation(
     return ani
 
 
-def show_graph_for_different_parameters(pca: PCA, rbf: RBF):
+def show_graph_for_different_parameters(pca: PCA, rbf: RBF, lhs_parameters):
     """
     Show graph for different parameters
     """
 
     # Function to update the plot based on widget input
-    def update_plot(hs=1.5, hs_l0=0.02, vegetation=1):
-        # Create dataframe
-        df_dataset_single_case = pd.DataFrame(
-            data={
-                "Hs": [hs],
-                "Hs_L0": [hs_l0],
-                "VegetationHeight": [vegetation],
+    def update_plot(Hs,Hs_L0,WL,vegetation_height,plants_density):
+        data={
+            "Hs": Hs,
+            "Hs_L0": Hs_L0,
+            "WL": WL,              
+            "vegetation_height": vegetation_height,
+            "plants_density": plants_density,
             }
-        )
+        df_dataset_single_case = pd.DataFrame([data])
 
         # Spatial Reconstruction
         predicted_hs = rbf.predict(dataset=df_dataset_single_case)
@@ -108,28 +108,42 @@ def show_graph_for_different_parameters(pca: PCA, rbf: RBF):
         #     color="darkgreen",
         #     linewidth=int(25 * vegetation),
         # )
-        ax.set_ylim(-7, 4)
+        ax.set_ylim(-1, 3)
         ax.set_xlim(400, 1160)
         ax.grid(True)
 
-        ax.set_title(
-            f"Reconstructed Hs for Hs: {hs}, Hs_L0: {hs_l0} and VegetationHeight: {vegetation}"
-        )
+        #ax.set_title(
+        #    f"Reconstructed Hs for Hs: {hs}, Hs_L0: {hs_l0}, wl: {wl}, vegetation height: {vegetation_height} and plants density: {plants_density}"
+        #)
 
-    # Creating widgets
-    widget_hs = widgets.FloatSlider(
-        value=1.5, min=0.5, max=3, step=0.5, description="Hs:"
-    )
-    widget_hs_l0 = widgets.FloatSlider(
-        value=0.02, min=0.01, max=0.03, step=0.01, description="Hs_L0:"
-    )
-    widget_vegetation = widgets.FloatSlider(
-        value=1, min=0, max=1.5, step=0.5, description="VegetationHeight:"
-    )
+# variables_to_analyse_in_metamodel = ["Hs", "Hs_L0", "WL","vegetation_height","plants_density"]
+# lhs_parameters = {
+#     "num_dimensions": 5,
+#     "num_samples": 10000,
+#     "dimensions_names": variables_to_analyse_in_metamodel,
+#     "lower_bounds": [0.5, 0.005, 0, 0, 0],
+#     "upper_bounds": [2, 0.05, 1, 1.5, 1000],
+# }
+    i=0
+    parameters = {}
+    # Create widgets for each parameter
+    for param in lhs_parameters["dimensions_names"]:
+        min=lhs_parameters["lower_bounds"][i]
+        max=lhs_parameters["upper_bounds"][i]
+        step=(max-min)/10
+        value=np.random.uniform(min, max)
+        parameters[param] = widgets.FloatSlider(
+            value= value,
+            min=min,
+            max=max,
+            step=step,
+            description=param,
+        )
+        i=i+1
 
     # Using interact to link widgets to the function
     return interact(
-        update_plot, hs=widget_hs, hs_l0=widget_hs_l0, vegetation=widget_vegetation
+        update_plot, Hs=parameters["Hs"],Hs_L0=parameters["Hs_L0"],WL=parameters["WL"],vegetation_height=parameters["vegetation_height"],plants_density=parameters["plants_density"]
     )
 
 
