@@ -7,9 +7,9 @@ case_num = int(sys.argv[1]) if len(sys.argv) > 1 else 0
 
 root_dir="/home/grupos/geocean/valvanuz/HySwash/BlueMath/methods/hybrid_downscaling/metamodels/HySwash"
 #output_dir = "/lustre/geocean/DATA/hidronas1/valva/Veggy_topo_alba"
-output_dir = os.path.join(root_dir, "output")
+output_dir = os.path.join(root_dir, "output_Veggy_Hs_mono")
 templates_dir = os.path.join(root_dir, "templates", "VeggyBig")
-export_dir = op.join(root_dir, "HyVeggy_exported")
+export_dir = op.join(root_dir, "exported_Veggy_Hs_mono")
 
 
 
