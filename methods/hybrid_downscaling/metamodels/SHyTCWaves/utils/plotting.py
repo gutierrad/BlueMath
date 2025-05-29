@@ -3,6 +3,7 @@ from typing import Dict, List, Optional
 
 import cartopy
 import cartopy.crs as ccrs
+import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
@@ -67,18 +68,18 @@ def fix_extent(ax: Axes, extent: List[float]) -> None:
 
 
 def axplot_cartopy_robin(
-    ax: ccrs.GeoAxesSubplot,
+    ax: Axes,
     resolution: str = "l",
     cfill: str = "silver",
     cocean: str = "azure",
     mode_simple: bool = False,
-) -> ccrs.GeoAxesSubplot:
+) -> Axes:
     """
     Plot a Cartopy Robinson projection on the given axes.
 
     Parameters
     ----------
-    ax : ccrs.GeoAxesSubplot
+    ax : Axes
         The axes on which to plot the map.
     resolution : str, optional
         The resolution of the map features, by default 'l'.
@@ -91,7 +92,7 @@ def axplot_cartopy_robin(
 
     Returns
     -------
-    ccrs.GeoAxesSubplot
+    Axes
         The modified axes object.
     """
 
@@ -107,7 +108,7 @@ def axplot_cartopy_robin(
 
 def axplot_shy_swath_cartopy(
     fig: Figure,
-    ax: ccrs.GeoAxesSubplot,
+    ax: Axes,
     xds_bulk: xr.Dataset,
     storm: xr.Dataset,
     var: str = "hswath",
@@ -126,7 +127,7 @@ def axplot_shy_swath_cartopy(
     ----------
     fig : Figure
         The figure object to plot on.
-    ax : ccrs.GeoAxesSubplot
+    ax : Axes
         The axes object to plot on.
     xds_bulk : xr.Dataset
         The dataset containing the bulk parameters.
@@ -205,7 +206,7 @@ def axplot_shy_swath_cartopy(
 
 def axplot_st_cartopy(
     fig: Figure,
-    ax: ccrs.GeoAxesSubplot,
+    ax: Axes,
     storm: xr.Dataset,
     name: str = "",
     storm_year: int = 2000,
@@ -218,7 +219,7 @@ def axplot_st_cartopy(
     ----------
     fig : Figure
         The figure object to plot on.
-    ax : ccrs.GeoAxesSubplot
+    ax : Axes
         The axes object to plot on.
     storm : xr.Dataset
         The storm track data.
@@ -362,13 +363,64 @@ def plot_hs_tp_point(
         Latitude of the point to plot.
     """
 
-    fig = plt.figure(figsize=(30, 10))
-    ax = fig.add_subplot(1, 1, 1, projection=ccrs.Mollweide(central_longitude=200))
+    xds_point = xds_bulk.isel(
+        point=np.argmin(
+            np.sqrt((xds_bulk.lon.values - lon) ** 2 + (xds_bulk.lat.values - lat) ** 2)
+        )
+    )
+
+    fig = plt.figure(figsize=(20, 12))
+    gs = gridspec.GridSpec(3, 5, figure=fig)
+
+    ax = fig.add_subplot(gs[0:2, 0:2], projection=ccrs.Mollweide(central_longitude=200))
     ax = axplot_cartopy_robin(
         ax, resolution="l", cfill="silver", cocean="azure", mode_simple=False
     )
+    ax.scatter(
+        xds_bulk.lon.values,
+        xds_bulk.lat.values,
+        c=xds_bulk.hswath.values,
+        cmap=cmap_wa,
+        transform=ccrs.PlateCarree(),
+    )
+    ax.set_extent([area[0] - 2, area[1] + 2, area[2] - 2, area[3] + 2])
 
-    # Plot the point
-    ax.plot(lon, lat, "ro", markersize=10, transform=ccrs.PlateCarree())
+    ax.scatter(
+        lon,
+        lat,
+        c="yellow",
+        s=200,
+        marker="*",
+        ec="green",
+        label="Selected point",
+        zorder=100,
+        transform=ccrs.PlateCarree(),
+    )
+    ax.set_aspect("equal")
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["bottom"].set_visible(False)
+    ax.spines["left"].set_visible(False)
 
-    ax.set_extent([area[0] - 2, area[1] + 10, area[2] - 10, area[3] + 10])
+    ax.legend()
+
+    ax = fig.add_subplot(gs[0, 2:5])
+    ax.plot(xds_point.time.values, xds_point.hsbmu.values, color="royalblue", lw=2)
+    ax.grid(":", color="lightgrey")
+    ax.set_title("Hs at selected point", fontsize=14)
+    ax.set_ylabel("Hs (m)", fontsize=14)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["bottom"].set_visible(False)
+    ax.spines["left"].set_visible(False)
+
+    ax = fig.add_subplot(gs[1, 2:5])
+    ax.plot(xds_point.time.values, xds_point.tpbmu.values, color="firebrick", lw=2)
+    ax.grid(":", color="lightgrey")
+    ax.set_title("Tp at selected point", fontsize=14)
+    ax.set_ylabel("Tp (s)", fontsize=14)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["bottom"].set_visible(False)
+    ax.spines["left"].set_visible(False)
+    plt.show()
