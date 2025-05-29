@@ -1,4 +1,5 @@
 from math import sqrt
+from typing import List, Tuple
 
 import cmocean
 import matplotlib.colors as colors
@@ -8,18 +9,49 @@ from matplotlib import cm
 from scipy import interpolate
 
 
-def GetDivisors(x):
+def GetDivisors(x: int) -> List[int]:
+    """
+    Calculate all divisors of a given number.
+
+    Parameters
+    ----------
+    x : int
+        The number to find divisors for.
+
+    Returns
+    -------
+    List[int]
+        A list of all divisors of x (excluding x itself).
+    """
+
     l_div = []
     i = 1
     while i < x:
         if x % i == 0:
             l_div.append(i)
         i = i + 1
+
     return l_div
 
 
-def GetBestRowsCols(n):
-    "try to square number n, used at gridspec plots"
+def GetBestRowsCols(n: int) -> Tuple[int, int]:
+    """
+    Calculate the optimal number of rows and columns for a grid layout.
+
+    This function tries to create a square-like grid layout by finding the best
+    divisors of n. If n is a perfect square, it returns equal rows and columns.
+    Otherwise, it finds the closest rectangular layout.
+
+    Parameters
+    ----------
+    n : int
+        The total number of elements to arrange in a grid.
+
+    Returns
+    -------
+    Tuple[int, int]
+        A tuple containing (number_of_rows, number_of_columns).
+    """
 
     sqrt_n = sqrt(n)
     if sqrt_n.is_integer():
@@ -33,21 +65,38 @@ def GetBestRowsCols(n):
     return n_r, n_c
 
 
-def calc_quiver(X, Y, var, vdir, size=30):
+def calc_quiver(
+    X: np.ndarray, Y: np.ndarray, var: np.ndarray, vdir: np.ndarray, size: int = 30
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
-    interpolates var and plots quiver with var_dir. Requires open figure
+    Interpolate variables and prepare data for quiver plot visualization.
 
-    X, Y - mesh grid dim. arrays
-    var  - variable module
-    vdir - variable direction (º clockwise relative to North)
+    This function interpolates the input variables onto a new mesh grid and calculates
+    the vector components for quiver plotting. The direction convention is clockwise
+    from geographic north.
 
-    opt. args
-    size - quiver mesh size
+    Parameters
+    ----------
+    X : np.ndarray
+        X-coordinates mesh grid array.
+    Y : np.ndarray
+        Y-coordinates mesh grid array.
+    var : np.ndarray
+        Variable magnitude array.
+    vdir : np.ndarray
+        Variable direction array in degrees (clockwise from North).
+    size : int, optional
+        Size of the quiver mesh, by default 30.
 
-    **Spherical direction convention: direction clockwise from geographic north
-
-    returns data for quiver plot (x_q, y_q, var_q, u, v)
-        then plot with: plt.quiver(x_q, y_q, -u*var_q, -v*var_q)
+    Returns
+    -------
+    Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
+        A tuple containing:
+            - x_q: X-coordinates for quiver plot
+            - y_q: Y-coordinates for quiver plot
+            - var_q: Interpolated variable magnitude
+            - u: X-component of the vector
+            - v: Y-component of the vector
     """
 
     step = (X[-1] - X[0]) / size
@@ -76,6 +125,7 @@ def calc_quiver(X, Y, var, vdir, size=30):
     vdir_q_x = f_dir_x(x_q, y_q)
     vdir_q_y = f_dir_y(x_q, y_q)
     vdir_q = np.rad2deg(np.arctan(vdir_q_x / vdir_q_y))
+
     # sign correction
     vdir_q[(vdir_q_x > 0) & (vdir_q_y < 0)] = (
         vdir_q[(vdir_q_x > 0) & (vdir_q_y < 0)] + 180
@@ -91,16 +141,43 @@ def calc_quiver(X, Y, var, vdir, size=30):
     return x_q, y_q, var_q, u, v
 
 
-###########################
-# aux matplotlib utils
-
-
-def custom_cmap(numcolors, map1, m1ini, m1end, map2, m2ini, m2end):
+def custom_cmap(
+    numcolors: int,
+    map1: str,
+    m1ini: float,
+    m1end: float,
+    map2: str,
+    m2ini: float,
+    m2end: float,
+) -> colors.ListedColormap:
     """
-    Generate custom colormap
-    Example: Red-Orange-Yellow-Green-Blue -- map1='YlOrRd' map2='YlGnBu_r'
-    mXini, mXend:   colormap range of colors
-    numcolors:      number of colors (100-continuous, 15-discretization)
+    Generate a custom colormap by combining two existing colormaps.
+
+    This function creates a custom colormap by combining two existing colormaps
+    with specified ranges. Useful for creating smooth transitions between different
+    color schemes.
+
+    Parameters
+    ----------
+    numcolors : int
+        Number of colors in the colormap (100 for continuous, 15 for discretization).
+    map1 : str
+        Name of the first colormap (e.g., 'YlOrRd').
+    m1ini : float
+        Start point for the first colormap range (0-1).
+    m1end : float
+        End point for the first colormap range (0-1).
+    map2 : str
+        Name of the second colormap (e.g., 'YlGnBu_r').
+    m2ini : float
+        Start point for the second colormap range (0-1).
+    m2end : float
+        End point for the second colormap range (0-1).
+
+    Returns
+    -------
+    colors.ListedColormap
+        A new custom colormap combining the two input colormaps.
     """
 
     # color maps
@@ -127,9 +204,24 @@ def custom_cmap(numcolors, map1, m1ini, m1end, map2, m2ini, m2end):
     return newcmp
 
 
-def bathy_cmap(bottom_lim, top_lim):
+def bathy_cmap(bottom_lim: int, top_lim: int) -> colors.ListedColormap:
     """
-    Generate custom colormap for bathymetry plots
+    Generate a custom colormap specifically designed for bathymetry plots.
+
+    This function creates a specialized colormap combining the 'turbid' colormap
+    from cmocean with a reversed 'YlGnBu' colormap, optimized for bathymetry visualization.
+
+    Parameters
+    ----------
+    bottom_lim : int
+        Number of colors for the bottom part of the colormap.
+    top_lim : int
+        Number of colors for the top part of the colormap.
+
+    Returns
+    -------
+    colors.ListedColormap
+        A custom colormap suitable for bathymetry visualization.
     """
 
     # colormaps
