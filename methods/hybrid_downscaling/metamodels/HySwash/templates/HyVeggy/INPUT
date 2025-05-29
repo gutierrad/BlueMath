@@ -2,7 +2,7 @@ $Project name
 PROJECT 'Veggy_100' '{{ case_num }}'
 $
 $Set water level
-SET LEVEL={{WL}}
+SET LEVEL=0.0
 $
 $(1D-mode, flume) or (2D-mode, basin)
 MODE DYNanic ONED
@@ -29,7 +29,7 @@ $
 $Physics
 BREAK 
 FRIC MANNING 0.01
-VEGETATION {{ vegetation_height }} 0.005 1 0.2
+VEGETATION {{ hv }} 0.005 1 0.4
 INPGRID NPLANTS 0 0 0 {{ mxinp }} 0 {{ dxinp }} 0.0
 READINP NPLANTS 1 'plants.txt' 1 0 FREE
 $Numerics
@@ -42,7 +42,7 @@ DISCRET UPW WMOM H NONE
 DISCRET CORR
 $
 $Time integration
-TIMEI 0.1 0.5
+TIMEI 0.1 0.3
 $
 QUANTITY XP hexp=10
 QUANT RUNUP delrp 0.01
