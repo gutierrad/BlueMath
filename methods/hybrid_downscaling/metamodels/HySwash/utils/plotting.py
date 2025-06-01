@@ -279,11 +279,11 @@ def plot_depthfile(depthfile, ax=None, xlim=None, dxinp=1):
         alpha = 1,
         zorder = 2,
     )
-    ax.plot(
-        x, -depth,
-        color = 'k',
-        zorder = 3,
-    )
+    # ax.plot(
+    #     x, -depth,
+    #     color = 'grey',
+    #     zorder = 3,
+    # )
 
     if not xlim:
             ax.set_xlim(x[0], x[-1])
