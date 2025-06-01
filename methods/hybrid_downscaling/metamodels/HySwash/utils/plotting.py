@@ -9,6 +9,8 @@ import xarray as xr
 from bluemath_tk.datamining.pca import PCA
 from bluemath_tk.interpolation.rbf import RBF
 from ipywidgets import interact
+import matplotlib.cm as cm
+import matplotlib.colors as mcolors
 
 
 def animate_case_propagation(
@@ -26,19 +28,20 @@ def animate_case_propagation(
 
     # Función de actualización de la animación
     def update(frame):
+        y_lim=[-10, 6]
         ax.clear()
 
         ax.tick_params(axis="both", which="major", labelsize=12)
-        ax.set_xlim(400, 1250)
-        ax.set_ylim(-4, 2)
+        ax.set_xlim(0, 600)
+        ax.set_ylim(y_lim[0], y_lim[1])
         ax.set_xlabel("Cross-shore Distance (m)", fontsize=12)
         ax.set_ylabel("Elevation (m)", fontsize=12)
 
         # bathymetry
         ax.fill_between(
             np.arange(len(depth)),
-            np.ones(len(depth)) * depth[-1],
             -depth,
+            y_lim[0],
             fc="wheat",
             zorder=2,
         )
@@ -46,13 +49,13 @@ def animate_case_propagation(
         # waves
         elev = case_dataset.isel(Tsec=frame)["Watlev"].values
         ax.fill_between(
-            np.arange(len(depth)),
-            np.ones(len(depth)) * depth[-1],
-            elev,
-            fc="deepskyblue",
-            alpha=0.5,
-            zorder=1,
-        )
+             np.arange(len(depth)),
+             -depth,
+             elev,
+             fc="deepskyblue",
+             alpha=0.5,
+             zorder=1,
+         )
         ax.set_title("Time : {0} s".format(frame), fontsize=12)
 
         return []
@@ -67,19 +70,19 @@ def animate_case_propagation(
     return ani
 
 
-def show_graph_for_different_parameters(pca: PCA, rbf: RBF, lhs_parameters):
+def show_graph_for_different_parameters(pca: PCA, rbf: RBF, lhs_parameters,depthfile):
     """
     Show graph for different parameters
     """
-
+    
     # Function to update the plot based on widget input
-    def update_plot(Hs,Hs_L0,WL,vegetation_height,plants_density):
+    def update_plot(Hs,Hs_L0,Wv,hv,Nv):
         data={
             "Hs": Hs,
-            "Hs_L0": Hs_L0,
-            "WL": WL,              
-            "vegetation_height": vegetation_height,
-            "plants_density": plants_density,
+            "Hs_L0": Hs_L0,            
+            "Wv": Wv,
+            "hv": hv,
+            "Nv": Nv
             }
         df_dataset_single_case = pd.DataFrame([data])
 
@@ -99,8 +102,25 @@ def show_graph_for_different_parameters(pca: PCA, rbf: RBF, lhs_parameters):
         # Get reconstructed Hs
         ds_output_all = pca.inverse_transform(PCs=predicted_hs_ds)
 
-        fig, ax = plt.subplots(figsize=(14, 6))
+        # Plotting
+        fig,ax=plt.subplots(1,1,figsize=(11,3))
+        plot_depthfile(depthfile=depthfile, ax=ax)
         ds_output_all["Hs"].sel(case_num=0).plot(x="Xp", ax=ax, color="k")
+        depth= np.loadtxt(depthfile)
+
+        min_Nv = 0
+        max_Nv = 1000
+        norm = mcolors.Normalize(vmin=min_Nv, vmax=max_Nv)
+        cmap = cm.get_cmap('Greens')
+
+        color = cmap(norm(Nv))
+        
+        ax.plot(
+            np.arange(400-int(Wv),400), -depth[400-int(Wv):400],
+            color = color,
+            zorder = 3,
+            linewidth=8*hv
+        )
         # sm.plot_depthfile(ax=ax)
         # ax.plot(
         #     np.arange(int(pp.swash_proj.np_ini), int(pp.swash_proj.np_fin)),
@@ -108,8 +128,9 @@ def show_graph_for_different_parameters(pca: PCA, rbf: RBF, lhs_parameters):
         #     color="darkgreen",
         #     linewidth=int(25 * vegetation),
         # )
-        ax.set_ylim(-1, 3)
-        ax.set_xlim(400, 1160)
+        #ax.set_ylim(-1, 3)
+        ax.set_ylim(-12,6)
+        ax.set_xlim(0, 600)
         ax.grid(True)
 
         #ax.set_title(
@@ -143,7 +164,7 @@ def show_graph_for_different_parameters(pca: PCA, rbf: RBF, lhs_parameters):
 
     # Using interact to link widgets to the function
     return interact(
-        update_plot, Hs=parameters["Hs"],Hs_L0=parameters["Hs_L0"],WL=parameters["WL"],vegetation_height=parameters["vegetation_height"],plants_density=parameters["plants_density"]
+        update_plot, Hs=parameters["Hs"],Hs_L0=parameters["Hs_L0"],Wv=parameters["Wv"],hv=parameters["hv"],Nv=parameters["Nv"]
     )
 
 
@@ -258,11 +279,11 @@ def plot_depthfile(depthfile, ax=None, xlim=None, dxinp=1):
         alpha = 1,
         zorder = 2,
     )
-    ax.plot(
-        x, -depth,
-        color = 'k',
-        zorder = 3,
-    )
+    # ax.plot(
+    #     x, -depth,
+    #     color = 'grey',
+    #     zorder = 3,
+    # )
 
     if not xlim:
             ax.set_xlim(x[0], x[-1])
@@ -276,4 +297,3 @@ def plot_depthfile(depthfile, ax=None, xlim=None, dxinp=1):
     ax.spines['left'].set_visible(False)
     ax.spines['right'].set_visible(False)
 
-        
