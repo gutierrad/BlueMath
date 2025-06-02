@@ -1,0 +1,150 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% XBeach parameter settings input file                                %%%
+%%%                                                                     %%%
+%%% date: 10-07-2024 08:20:46                                           %%%
+%%% function: wrap_xbeach                                               %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Project: UX01_baseline, Case: {{ case_num }}
+
+%%% Grid parameters %%%
+
+xyfile         = UX01_Ax10.grd
+depfile        = UX01_Ax10.dep
+gridform       = delft3d
+posdwn         = -1
+vardx          = 1
+
+% directional grid for short waves and rollers
+thetanaut      = 1
+thetamin       = -180
+thetamax       = 180
+dtheta         = 15
+
+%%% Modes specification %%%
+
+wavemodel      = surfbeat
+sedtrans       = 0
+morphology     = 0
+
+%%% Model time %%%
+
+tstop          = 14400
+CFL            = 0.5
+
+%%% SWE boundary conditions type %%%
+
+left           = neumann
+right          = neumann
+front          = abs_2d
+back           = wall
+
+bedfriction    = cf
+bedfricfile    = UX01_Ax10_cf.txt
+
+fwfile         = UX01_Ax10_fw.txt
+
+%%% Wave boundary condition parameters %%%
+
+wbctype        = jonstable
+bcfile         = jonswap.txt
+
+%%% Tide boundary conditions %%%
+
+zs0            = {{ SWL }}
+
+%%% Wave breaking parameters %%%
+
+%%% Numerical parameters %%%
+
+eps            = 0.001
+
+%%% Parallel %%%
+
+%%% Grid parameters %%%
+
+mpiboundary   = man
+
+nmpi          = 1
+
+mmpi          = 8
+
+%%% Physical constants %%%
+
+rho            = 1025
+g              = 9.81
+
+%%% Output variables %%%
+
+outputformat   = netcdf
+tstart         = 0
+tintg          = 3600
+tintm          = 3600
+tintp          = 6
+rugdepth       = 0.001
+
+nmeanvar       = 2
+zs
+H
+
+nglobalvar     = 11
+zb
+zs
+H
+thetamean
+u
+ui
+ur
+umean
+v
+vi
+vmean
+
+npointvar      = 10
+zs
+H
+u
+ui
+ur
+umean
+v
+vi
+vmean
+c
+
+npoints        = 36
+411733.3 8473801.4
+412299.0 8473583.5
+412662.5 8473318.1
+412590.6 8472702.2
+413115.0 8472532.5
+413447.8 8472447.9
+413356.5 8472393.0
+413228.5 8472291.7
+413442.2 8472101.7
+413333.3 8471974.1
+413509.4 8471904.4
+415892.8 8471755.4
+414256.0 8471646.7
+416063.2 8471543.9
+416459.5 8471495.4
+417619.2 8471430.2
+418217.2 8471387.2
+414961.8 8471347.8
+417716.9 8471294.9
+415177.0 8471242.9
+415074.9 8471207.5
+415776.1 8471154.7
+419324.0 8471132.1
+419045.1 8471104.8
+416768.4 8471061.8
+415604.0 8471028.8
+415687.2 8470964.9
+419082.5 8470893.6
+419208.4 8470725.4
+419577.3 8470645.8
+419687.0 8470152.3
+420988.7 8469682.6
+420015.8 8469616.1
+420326.0 8469563.5
+421965.1 8469221.1
+422057.4 8468585.6
