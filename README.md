@@ -19,7 +19,7 @@ As shown in Figure 1, this repository provides examples of how to use the core t
 1. Internal project at the GeoOcean group, University of Cantabria.
 2. Specific Projects that partially support the development of BlueMath.
 
-<img src="assets/logos.png" alt="picture" width="800"/>
+<img src="assets/logos.svg" alt="picture" width="800"/>
 
 ## History
 
@@ -33,7 +33,20 @@ BlueMath aims to provide tools (toolkit), methods (hybrid downscaling, statistic
 
 Since the workshop in 2020, more universities has been interested in collaborating in the development of this community model BlueMath: UFSC (Brazil), TU Delft (Netherlands), UCSC (USA), ERDC (USA), IFCA (Spain). The collaboration of these institutions with the GeoOcean group of the University of Cantabria is being carried out through different mechanisms (sharing data bases, computer codes and methodologies, co-op agreements, consultancy projects, research projects, exchange of researchers).
 
+## Working Examples
+
+| Name                | Tested Image Version | Tested Commit                            | Path to Example                                        | Cloud |
+| ------------------- | -------------------- | ---------------------------------------- | ------------------------------------------------------ | ----- |
+| BinWaves_Duke  | geoocean/rocky8:1.12  | 4b47b92f7d194986a37867a44eeea5500d411076 | climate_services/hindcast/BinWaves_Duke           | ✅    |
+| GreenSurge_Tonga    | geoocean/rocky8:1.9  | 0805fa6944049ada65e257d54ee4ae96ad0b5b30 | climate_services/hindcast/GreenSurge_Tonga             | ❌    |
+| MUSCLE_Aveiro       | geoocean/rocky8:1.12  | 6eb0f1fc47d9040ca545df41b1013d8b2565b848 | climate_services/probabilistic/MUSCLE_Aveiro           | ✅    |
+| HySwash/Veggy       | geoocean/rocky8:1.12  | aa25b0b9cfc7a8ac8311587b1cc6300d75029a10 | methods/hybrid_downscaling/metamodels/HySwash/Veggy    | ✅    |
+| HySwash/CHySwash    | geoocean/rocky8:1.9  | 56413fb96147bab9d495af793ccd29cc88fea44f | methods/hybrid_downscaling/metamodels/HySwash/CHySwash | ❌    |
+| GreenSurge_Singapur | geoocean/rocky8:1.9  | 0805fa6944049ada65e257d54ee4ae96ad0b5b30 | methods/hybrid_downscaling/additive/GreenSurge         | ❌    |
+| SHyTCWaves          | geoocean/rocky8:1.9  | 56413fb96147bab9d495af793ccd29cc88fea44f | methods/hybrid_downscaling/metamodels/SHyTCWaves       | ❌    |
+
 ## Tips
 
 If `bluemath-tk` package is not recognized in a notebook:
+
 - Open VSCode pallette command (Ctrl + Shift + P o Cmd + Shift + P in macOS) and select: **Python: Restart Language Server**.

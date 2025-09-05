@@ -1,12 +1,17 @@
 {
-    "name": "Bluemath Notebooks",
+    "name": "BlueMath",
     "image": "geoocean/rocky8",
-    "settings": {
-        "terminal.integrated.shell.linux": "/bin/bash"
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash"
+            },
+            "extensions": [
+                "ms-python.python",
+                "ms-toolsai.jupyter",
+                "ms-toolsai.datawrangler"
+            ]
+        }
     },
-    "extensions": [
-        "ms-python.python",
-        "ms-toolsai.jupyter",
-        "ms-toolsai.datawrangler",
-    ]
+    "postCreateCommand": "bash .devcontainer/check_develop.sh"
 }
